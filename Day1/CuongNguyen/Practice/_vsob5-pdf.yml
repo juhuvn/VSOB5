@@ -1,0 +1,67 @@
+# ============================================================
+#  Cấu hình xuất PDF cho tài liệu VSOB5 (dùng Quarto)
+#
+#  Chạy:
+#     quarto render Hands-on.md --metadata-file=_vsob5-pdf.yml --to pdf
+#
+#  Toàn bộ định dạng dưới đây là tùy chọn có sẵn của Quarto.
+#  Tài liệu tham khảo: https://quarto.org/docs/reference/formats/pdf
+# ============================================================
+
+# --- Thông tin in trên trang bìa ----------------------------
+title: "Mastering Agentic AI in Bioinformatics: From Insight to Impact"
+subtitle: "Tài liệu thực hành · The 5^th^ Vietnam School of Biology (VSOB5)"
+author:
+  - "TS. Nguyễn Cường"
+  - "Giám đốc khoa học, Công ty LOBI"
+  - "NCVC, Viện Công nghệ Thông tin, VAST"
+date: "2026-10-29"
+date-format: "[Quy Nhơn, 29–31 tháng 10 năm ]YYYY"
+
+abstract: |
+  Tài liệu được biên soạn phục vụ phiên thực hành của khóa VSOB5, tổ chức tại
+  ICISE, 07 Science Avenue, phường Quy Nhơn Nam, Gia Lai.
+
+  Mọi kết quả do AI Agent tạo ra trong tài liệu này đều cần được người nghiên
+  cứu kiểm chứng trước khi sử dụng. Người nghiên cứu chịu trách nhiệm khoa học
+  cuối cùng đối với kết quả công bố.
+abstract-title: "Về tài liệu này"
+
+lang: vi
+
+format:
+  pdf:
+    # --- Khổ giấy, lề, kiểu tài liệu ------------------------
+    documentclass: scrreprt          # KOMA-Script: hợp cho tài liệu nhiều chương
+    classoption: [titlepage, oneside]
+    papersize: a4
+    geometry: margin=2.2cm
+
+    # --- Chữ -------------------------------------------------
+    fontsize: 11pt
+    linestretch: 1.15
+    mainfont: "Times New Roman"
+    monofont: "Courier New"          # phải có đủ dấu tiếng Việt
+    # Menlo và Andale Mono thiếu dấu tiếng Việt, không dùng được
+
+    # --- Mục lục ---------------------------------------------
+    toc: true
+    toc-title: "Mục lục"
+    toc-depth: 3
+    number-sections: false
+
+    # --- Liên kết, màu ---------------------------------------
+    colorlinks: true
+    linkcolor: "RoyalBlue"
+    urlcolor: "RoyalBlue"
+    toccolor: "black"
+
+    # --- Code ------------------------------------------------
+    pdf-engine: xelatex
+
+    # Cách chuẩn của Quarto để ngắt dòng code dài trong PDF,
+    # tránh bị tràn và cắt mất chữ ở lề phải.
+    include-in-header:
+      text: |
+        \usepackage{fvextra}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,commandchars=\\\{\}}

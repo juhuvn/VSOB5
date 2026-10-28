@@ -218,3 +218,61 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ============================================================
+#  Bổ sung cho repo VSOB5 (tài liệu, không phải mã nguồn Python)
+# ============================================================
+
+# --- macOS ---------------------------------------------------
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.TemporaryItems
+.fseventsd
+.VolumeIcon.icns
+.apdisk
+
+# --- Microsoft Office: file tạm/lock khi đang mở tài liệu -----
+#  Word/Excel/PowerPoint tạo file ẩn tên dạng ~$ten-tai-lieu.docx
+~$*
+*.tmp
+*.~vsd*
+
+# --- LibreOffice / WPS ---------------------------------------
+.~lock.*#
+
+# --- Google Drive (repo nằm trên Shared Drive) ---------------
+.tmp.driveupload/
+.tmp.drivedownload/
+*.gdoc
+*.gsheet
+*.gslides
+
+# --- Quarto / LaTeX: sản phẩm trung gian khi build PDF -------
+#  Lưu ý: PDF thành phẩm (Hands-on.pdf, 01-Case-study-challenge.pdf)
+#  thì VẪN commit, vì README có liên kết tới chúng.
+.quarto/
+*_files/
+*.aux
+*.toc
+*.lof
+*.lot
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+
+# File tạm do script tools/render-*.sh tạo ra rồi tự xóa;
+# liệt kê ở đây để phòng trường hợp build bị ngắt giữa chừng.
+_render-tmp-*
+
+# --- R -------------------------------------------------------
+.Rhistory
+.RData
+.Rproj.user/
