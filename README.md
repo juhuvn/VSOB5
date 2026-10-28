@@ -62,7 +62,10 @@ Bản Word chính thức, đầy đủ định dạng:
 
 #### Bài giảng
 
-- 🎞️ [VSOB5-CuongN-Lecture.pptx](Day1/CuongNguyen/VSOB5-CuongN-Lecture.pptx) — slide bài giảng
+| Tài liệu | Mô tả |
+| -- | -- |
+| 🖨️ [Agentic Bioinformatics in Practice.pdf](Day1/CuongNguyen/Agentic%20Bioinformatics%20in%20Practice.pdf) | **Slide bài giảng**, 60 trang. Bản PDF xem được trực tiếp trên GitHub, không cần tải về |
+| 🎞️ [VSOB5-intro.pptx](Day1/CuongNguyen/VSOB5-intro.pptx) | Slide khai mạc: giới thiệu chuỗi VSOB qua các năm, ban tổ chức, báo cáo viên mời, và máy chủ CBAS dùng cho phiên thực hành *(bấm để tải về)* |
 
 #### Thực hành
 
@@ -93,7 +96,8 @@ Nội dung tài liệu thực hành:
 
 | Tài liệu | Mô tả |
 | -- | -- |
-| 📖 [01-Case-study-challenge.md](Day2/01-Case-study-challenge.md) | **Đề bài cho các nhóm.** Khai thác dữ liệu công khai (GEO, recount3) bằng đội ngũ AI Agent: thẩm định dữ liệu, lên ý tưởng, phân tích, viết bài. Kèm thang điểm và quy định *(đang hoàn thiện)* |
+| 📖 [01-Case-study-challenge.md](Day2/01-Case-study-challenge.md) | **Đề bài cho các nhóm.** Bảy bối cảnh nghiên cứu khác nhau, khai thác dữ liệu công khai (GEO, recount3) bằng đội ngũ AI Agent: thẩm định dữ liệu, lên ý tưởng, phân tích, viết bài. Kèm thang điểm và quy định |
+| 🖨️ [01-Case-study-challenge.pdf](Day2/01-Case-study-challenge.pdf) | Bản PDF để in, có trang bìa và mục lục |
 
 ### Ngày 3 — Báo cáo và trao giải
 
