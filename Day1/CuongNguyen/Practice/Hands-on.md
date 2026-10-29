@@ -1687,7 +1687,7 @@ tinh_huong_2_auto/:
 > # sau đó sửa prompt trong script: agents/IdeaAgent.md → agents_auto/IdeaAgent.md
 > ```
 
-Hai script dưới đây đều có biến `PROJ` ở đầu, mặc định trỏ tới `tinh_huong_2_auto`. Muốn chạy trên thư mục khác thì đổi biến này, hoặc đặt khi gọi lệnh:
+Hai script dưới đây là **hai file độc lập**, mỗi file có biến `PROJ` ở đầu trỏ tới dự án riêng: Script 1 mặc định là `tinh_huong_2_auto`, Script 2 mặc định là `tinh_huong_2_vonglap`. Muốn chạy trên thư mục khác thì đổi biến này, hoặc đặt khi gọi lệnh:
 
 ```bash
 PROJ=tinh_huong_2_thu2 ./run_tinh_huong_2.sh
@@ -1857,77 +1857,181 @@ chmod +x run_tinh_huong_2.sh
 
 ### Script 2: Thêm vòng lặp phân tích – diễn giải
 
-Script 1 vẫn là dây chuyền một lượt — đúng hạn chế đã nêu ở mục 3.7. Script dưới đây hiện thực hóa **cải tiến số 1**: ***sau mỗi lượt phân tích, một agent đọc kết quả rồi quyết định xem đã đủ bằng chứng chưa hay cần đào sâu thêm***.
+Script 1 vẫn là dây chuyền một lượt — đúng hạn chế đã nêu ở mục 3.7. Script 2 hiện thực hóa **cải tiến số 1**: ***sau mỗi lượt phân tích, một agent đọc kết quả rồi quyết định xem đã đủ bằng chứng chưa hay cần đào sâu thêm***.
+
+Script 2 là **một file độc lập**, chạy trên **một dự án riêng**. Hai script không gọi lẫn nhau và không ghi chung thư mục, nên kết quả chạy một lượt của Script 1 vẫn còn nguyên để so sánh.
+
+|                 | Script 1                              | Script 2                                                   |
+| --------------- | ------------------------------------- | ---------------------------------------------------------- |
+| File            | `~/run_tinh_huong_2.sh`             | `~/run_tinh_huong_2_vonglap.sh`                          |
+| Dự án mặc định | `tinh_huong_2_auto/`                | `tinh_huong_2_vonglap/`                                  |
+| Khâu 1, 2, 4    | Như nhau                              | Như nhau                                                   |
+| Khâu 3          | Phân tích **một lượt**          | **Vòng lặp** phân tích – diễn giải, tối đa `MAX_VONG` vòng |
+
+#### Chuẩn bị dự án riêng cho Script 2
+
+Để so sánh công bằng, hai lần chạy nên **dùng chung câu hỏi nghiên cứu và bộ dữ liệu đã thẩm định**, chỉ khác nhau ở khâu 3. Vì vậy ta chép đầu vào và kết quả khâu 1, 2 từ `tinh_huong_2_auto/` sang dự án mới. Chạy tại thư mục home:
+
+```bash
+# 1) Tạo dự án mới, chép đầu vào giống hệt tinh_huong_2_auto
+mkdir -p tinh_huong_2_vonglap/logs
+cp -r tinh_huong_2_auto/{00_RawData,00_Ref,00_Literature,00_Guidelines,00_Backup,scripts,PROJECT.md} tinh_huong_2_vonglap/
+
+# 2) Chép kết quả khâu 1, 2 của Script 1 để hai lần chạy cùng xuất phát điểm
+cp -r tinh_huong_2_auto/{01_Idea,02_Data} tinh_huong_2_vonglap/
+cp tinh_huong_2_auto/logs/decisions.md tinh_huong_2_vonglap/logs/
+```
+
+Kiểm tra:
+
+```bash
+ls tinh_huong_2_vonglap/
+```
+
+Kết quả mong đợi — đã có `01_Idea` và `02_Data`, **chưa có** `03_Analysis`:
+
+```text
+00_Backup  00_Guidelines  00_Literature  00_RawData  00_Ref  01_Idea  02_Data  PROJECT.md  logs  scripts
+```
+
+> **Chưa chạy khâu 1, 2 của Script 1?** Bỏ qua bước 2), Script 2 tự chạy được cả bốn khâu. Khi đó câu hỏi nghiên cứu có thể khác lần chạy một lượt, nên phép so sánh ở cuối mục sẽ kém công bằng hơn.
+
+#### Tạo file `~/run_tinh_huong_2_vonglap.sh`
+
+Các chỗ khác Script 1 được đánh dấu `★`.
 
 ```bash
 #!/usr/bin/env bash
 # ============================================================
-#  Vòng lặp phân tích – diễn giải cho Tình huống 2
+#  Tình huống 2 – phiên bản có VÒNG LẶP phân tích – diễn giải
 #
-#  Mỗi vòng gồm hai bước:
+#  Khâu 1, 2, 4 giống Script 1. Riêng khâu 3 là một vòng lặp:
 #     BioinformaticianAgent phân tích  →  IdeaAgent đánh giá và đề xuất
-#  Vòng lặp dừng khi IdeaAgent nói "ĐỦ" hoặc khi hết số vòng cho phép.
+#  Vòng lặp dừng khi IdeaAgent ghi "DU" hoặc khi hết số vòng cho phép.
 #
 #  Dùng:
-#     ./run_vong_lap.sh                        # 3 vòng, trên tinh_huong_2_auto
-#     MAX_VONG=5 ./run_vong_lap.sh             # cho phép tối đa 5 vòng
-#     PROJ=thu_muc_khac ./run_vong_lap.sh      # đổi thư mục dự án
-#
-#  Script này chạy tiếp từ kết quả của khâu 1 và khâu 2, nên hãy chạy
-#  ./run_tinh_huong_2.sh 1 và ./run_tinh_huong_2.sh 2 trước.
+#     ./run_tinh_huong_2_vonglap.sh                # chạy cả bốn khâu
+#     ./run_tinh_huong_2_vonglap.sh 3              # chỉ chạy vòng lặp phân tích
+#     MAX_VONG=5 ./run_tinh_huong_2_vonglap.sh 3   # cho phép tối đa 5 vòng
+#     PROJ=thu_muc_khac ./run_tinh_huong_2_vonglap.sh    # đổi thư mục dự án
+#     AUTO=1 ./run_tinh_huong_2_vonglap.sh         # bỏ qua các điểm duyệt (KHÔNG khuyến khích)
 # ============================================================
 set -euo pipefail
 
-# Mặc định chạy trên dự án tự động, KHÔNG đè lên kết quả chạy thủ công.
-PROJ="${PROJ:-tinh_huong_2_auto}"
-MAX_VONG="${MAX_VONG:-3}"          # trần cứng, tránh lặp vô hạn
+# ★ Dự án riêng, KHÔNG đè lên kết quả của Script 1 trong tinh_huong_2_auto/
+PROJ="${PROJ:-tinh_huong_2_vonglap}"
+LOG="$PROJ/logs"
+MAX_VONG="${MAX_VONG:-3}"          # ★ trần cứng, tránh lặp vô hạn
 
 # Xem phần diễn giải Script 1 để biết ý nghĩa từng cờ.
 CODEX_FLAGS="${CODEX_FLAGS:---sandbox workspace-write --skip-git-repo-check}"
 
-# --- Kiểm tra đầu vào của vòng lặp --------------------------
-[[ -f "$PROJ/01_Idea/research_question.md" ]] || {
-  echo "Lỗi: thiếu '$PROJ/01_Idea/research_question.md'." >&2
-  echo "      Hãy chạy khâu 1 trước: ./run_tinh_huong_2.sh 1" >&2
+# --- Kiểm tra dự án đã sẵn sàng chưa ------------------------
+[[ -d "$PROJ" ]] || {
+  echo "Lỗi: không thấy thư mục '$PROJ'." >&2
+  echo "      Hãy làm bước 'Chuẩn bị dự án riêng cho Script 2' trước." >&2
   exit 1
 }
-[[ -f "$PROJ/02_Data/counts.tsv" ]] || {
-  echo "Lỗi: thiếu '$PROJ/02_Data/counts.tsv'." >&2
-  echo "      Hãy chạy khâu 2 trước: ./run_tinh_huong_2.sh 2" >&2
+[[ -f "$PROJ/PROJECT.md" ]] || {
+  echo "Lỗi: thiếu '$PROJ/PROJECT.md' — agent sẽ không biết mục tiêu dự án." >&2
   exit 1
 }
+[[ -f "AGENTS.md" && -d "agents" ]] || {
+  echo "Lỗi: thiếu AGENTS.md hoặc thư mục agents/ ở thư mục home." >&2
+  exit 1
+}
+mkdir -p "$LOG"
 
-mkdir -p "$PROJ/logs" "$PROJ/01_Idea"
+# --- Hàm gọi một agent --------------------------------------
+# $1 = tên khâu (để đặt tên file log), $2 = prompt
+run_agent() {
+  local ten="$1" prompt="$2"
+  echo "▶ Đang chạy: $ten"
+  # shellcheck disable=SC2086
+  codex exec $CODEX_FLAGS "$prompt" 2>&1 | tee "$LOG/${ten}.log"
+  echo "✔ Xong: $ten (nhật ký: $LOG/${ten}.log)"
+}
 
-for (( vong = 1; vong <= MAX_VONG; vong++ )); do
-  echo "══════════ VÒNG $vong / $MAX_VONG ══════════"
+# --- Điểm duyệt của con người -------------------------------
+# Dừng lại chờ Lead xem kết quả rồi mới đi tiếp.
+diem_duyet() {
+  local mo_ta="$1"
+  if [[ "${AUTO:-0}" == "1" ]]; then
+    echo "⚠ Bỏ qua điểm duyệt: $mo_ta"
+    return
+  fi
+  echo
+  echo "════════ ĐIỂM DUYỆT ════════"
+  echo "$mo_ta"
+  read -rp "Xem xong, nhấn Enter để đi tiếp (Ctrl+C để dừng)… "
+  echo
+}
 
-  # --- Bước A: phân tích ------------------------------------
-  # Vòng 1 chạy phân tích cơ bản; từ vòng 2 trở đi làm theo đề xuất
-  # mà IdeaAgent đã ghi ở vòng trước.
-  if (( vong == 1 )); then
-    viec="Hãy thực hiện phân tích cơ bản: khám phá dữ liệu (PCA, heatmap tương
+# --- Khâu 1: Lên ý tưởng ------------------------------------
+khau_1() {
+  run_agent "khau1_idea" "Đóng vai IdeaAgent, làm việc cho dự án $PROJ.
+
+Định hướng nghiên cứu: Phân tích lại dữ liệu RNA-seq công khai GSE167342 để tìm
+hiểu cơ chế phân tử giúp dòng lúa chuyển gen IL22 mang Saltol chịu mặn tốt hơn
+giống gốc mẫn cảm.
+
+Hãy thực hiện các nhiệm vụ trong agents/IdeaAgent.md."
+
+  diem_duyet "Đọc $PROJ/01_Idea/research_question.md, chọn một câu hỏi nghiên cứu
+và ghi lựa chọn kèm lý do vào $PROJ/logs/decisions.md."
+}
+
+# --- Khâu 2: Thẩm định dữ liệu ------------------------------
+khau_2() {
+  run_agent "khau2_data" "Đóng vai DataAgent, làm việc cho dự án $PROJ.
+
+Câu hỏi nghiên cứu đã chọn nằm trong 01_Idea/research_question.md.
+Hãy thực hiện các nhiệm vụ trong agents/DataAgent.md."
+
+  diem_duyet "Mở $PROJ/02_Data/samples.tsv, đối chiếu với trang GEO của GSE167342."
+}
+
+# --- ★ Khâu 3: VÒNG LẶP phân tích – diễn giải ---------------
+khau_3() {
+  [[ -f "$PROJ/01_Idea/research_question.md" ]] || {
+    echo "Lỗi: thiếu '$PROJ/01_Idea/research_question.md'." >&2
+    echo "      Hãy chạy khâu 1 trước: $0 1" >&2
+    exit 1
+  }
+  [[ -f "$PROJ/02_Data/counts.tsv" ]] || {
+    echo "Lỗi: thiếu '$PROJ/02_Data/counts.tsv'." >&2
+    echo "      Hãy chạy khâu 2 trước: $0 2" >&2
+    exit 1
+  }
+
+  local vong viec verdict verdict_file
+  for (( vong = 1; vong <= MAX_VONG; vong++ )); do
+    echo "══════════ VÒNG $vong / $MAX_VONG ══════════"
+
+    # --- Bước A: phân tích ----------------------------------
+    # Vòng 1 chạy phân tích cơ bản; từ vòng 2 trở đi làm theo đề xuất
+    # mà IdeaAgent đã ghi ở vòng trước.
+    if (( vong == 1 )); then
+      viec="Hãy thực hiện phân tích cơ bản: khám phá dữ liệu (PCA, heatmap tương
 quan), phân tích DEG bằng DESeq2 với thiết kế có tương tác, và phân tích chức
 năng GO. Ghi kết quả vào 03_Analysis/ và viết 03_Analysis/README.md."
-  else
-    viec="IdeaAgent đã đề xuất các phân tích tiếp theo trong
+    else
+      viec="IdeaAgent đã đề xuất các phân tích tiếp theo trong
 01_Idea/iteration_$(( vong - 1 )).md. Hãy thực hiện các đề xuất được xếp ưu tiên
 cao nhất, ghi kết quả vào 03_Analysis/ và cập nhật 03_Analysis/README.md."
-  fi
+    fi
 
-  # shellcheck disable=SC2086
-  codex exec $CODEX_FLAGS "Đóng vai BioinformaticianAgent, làm việc cho dự án $PROJ.
+    run_agent "khau3_vong${vong}_phantich" "Đóng vai BioinformaticianAgent, làm việc cho dự án $PROJ.
 
 $viec
 
 Sau khi xong, ghi tóm tắt những gì đã làm và kết quả chính vào cuối
-logs/research_notebook.md." 2>&1 | tee "$PROJ/logs/vong${vong}_phantich.log"
+logs/research_notebook.md."
 
-  # --- Bước B: diễn giải và quyết định ----------------------
-  # Yêu cầu agent ghi phán quyết ra một file riêng, mỗi file đúng một từ.
-  # Cách này dễ kiểm tra hơn là dò chữ trong một đoạn văn dài.
-  # shellcheck disable=SC2086
-  codex exec $CODEX_FLAGS "Đóng vai IdeaAgent, làm việc cho dự án $PROJ.
+    # --- Bước B: diễn giải và quyết định --------------------
+    # Yêu cầu agent ghi phán quyết ra một file riêng, mỗi file đúng một từ.
+    # Cách này dễ kiểm tra hơn là dò chữ trong một đoạn văn dài.
+    run_agent "khau3_vong${vong}_diengiai" "Đóng vai IdeaAgent, làm việc cho dự án $PROJ.
 
 BioinformaticianAgent vừa hoàn thành lượt phân tích thứ $vong, kết quả nằm trong
 03_Analysis/README.md.
@@ -1947,51 +2051,80 @@ Cuối cùng, ghi phán quyết vào file 01_Idea/verdict_$vong.txt, nội dung 
   xuất mới sẽ không còn làm thay đổi kết luận.
 - Ghi TIEPTUC nếu còn hướng đáng đào sâu.
 
-Không tự chạy phân tích." 2>&1 | tee "$PROJ/logs/vong${vong}_dienGiai.log"
+Không tự chạy phân tích."
 
-  # --- Kiểm tra điều kiện dừng ------------------------------
-  verdict_file="$PROJ/01_Idea/verdict_${vong}.txt"
-  if [[ ! -f "$verdict_file" ]]; then
-    echo "⚠ Không thấy $verdict_file. Dừng để kiểm tra bằng tay." >&2
-    exit 1
-  fi
+    # --- Kiểm tra điều kiện dừng ----------------------------
+    verdict_file="$PROJ/01_Idea/verdict_${vong}.txt"
+    if [[ ! -f "$verdict_file" ]]; then
+      echo "⚠ Không thấy $verdict_file. Dừng để kiểm tra bằng tay." >&2
+      exit 1
+    fi
 
-  verdict="$(tr -d '[:space:]' < "$verdict_file")"
-  echo "→ Phán quyết vòng $vong: $verdict"
+    verdict="$(tr -d '[:space:]' < "$verdict_file")"
+    echo "→ Phán quyết vòng $vong: $verdict"
 
-  if [[ "$verdict" == "DU" ]]; then
-    echo "✔ Đã đủ bằng chứng sau $vong vòng."
-    break
-  fi
+    if [[ "$verdict" == "DU" ]]; then
+      echo "✔ Đã đủ bằng chứng sau $vong vòng."
+      break
+    fi
 
-  if (( vong == MAX_VONG )); then
-    echo "⚠ Hết $MAX_VONG vòng mà vẫn chưa đủ bằng chứng."
-    echo "  Hãy đọc 01_Idea/iteration_$vong.md và tự quyết định bước tiếp theo."
-  fi
-done
+    if (( vong == MAX_VONG )); then
+      echo "⚠ Hết $MAX_VONG vòng mà vẫn chưa đủ bằng chứng."
+      echo "  Hãy đọc $PROJ/01_Idea/iteration_$vong.md và tự quyết định bước tiếp theo."
+    fi
+  done
 
-# --- Điểm duyệt bắt buộc trước khi viết bài -----------------
-echo
-echo "════════ ĐIỂM DUYỆT ════════"
-echo "Đọc 03_Analysis/README.md và các file 01_Idea/iteration_*.md."
-echo "Chỉ chạy tiếp khâu viết bài khi bạn đồng ý với kết quả phân tích."
-read -rp "Nhấn Enter để chạy khâu 4, hoặc Ctrl+C để dừng… "
+  # ★ Điểm duyệt bắt buộc trước khi viết bài
+  diem_duyet "Đọc $PROJ/03_Analysis/README.md và các file $PROJ/01_Idea/iteration_*.md.
+Chỉ đi tiếp sang khâu viết bài khi bạn đồng ý với kết quả phân tích."
+}
 
-PROJ="$PROJ" ./run_tinh_huong_2.sh 4
+# --- Khâu 4: Viết bài và phản biện --------------------------
+khau_4() {
+  run_agent "khau4_viet" "Đóng vai WriterAgent, làm việc cho dự án $PROJ.
+Hãy viết bản thảo bài báo theo nhiệm vụ 1–4 trong agents/WriterAgent.md,
+tuân thủ thể lệ trong 00_Guidelines/the-le-viet-bai_chi-tiet.docx."
+
+  run_agent "khau4_phanbien" "Đóng vai ReviewerAgent, làm việc cho dự án $PROJ.
+Hãy phản biện bản thảo 04_Manuscript/manuscript.md theo nhiệm vụ trong
+agents/ReviewerAgent.md."
+
+  run_agent "khau4_sua" "Đóng vai WriterAgent, làm việc cho dự án $PROJ.
+ReviewerAgent đã phản biện trong 05_Review/review.md. Hãy sửa bản thảo theo
+nhiệm vụ 5 trong agents/WriterAgent.md."
+
+  diem_duyet "Mở $PROJ/04_Manuscript/manuscript_v2.html và đọc response_to_review.md."
+}
+
+# --- Điều phối ----------------------------------------------
+case "${1:-all}" in
+  1) khau_1 ;;
+  2) khau_2 ;;
+  3) khau_3 ;;
+  4) khau_4 ;;
+  all) khau_1; khau_2; khau_3; khau_4 ;;
+  *) echo "Dùng: $0 [1|2|3|4|all]" >&2; exit 1 ;;
+esac
+
+echo "✔ Hoàn thành."
 ```
 
-Lưu ý thứ tự chạy: script vòng lặp **thay thế khâu 3**, nên trình tự đầy đủ là
+Chạy:
 
 ```bash
-./run_tinh_huong_2.sh 1      # lên ý tưởng
-./run_tinh_huong_2.sh 2      # thẩm định dữ liệu
-./run_vong_lap.sh            # phân tích nhiều vòng, rồi tự gọi khâu 4
+chmod +x run_tinh_huong_2_vonglap.sh
+./run_tinh_huong_2_vonglap.sh 3      # vòng lặp phân tích (khâu 1, 2 đã chép sang ở bước chuẩn bị)
+./run_tinh_huong_2_vonglap.sh 4      # viết bài và phản biện
 ```
+
+Nếu đã bỏ qua bước 2) của phần chuẩn bị thì chạy cả bốn khâu bằng `./run_tinh_huong_2_vonglap.sh`.
 
 **Diễn giải cơ chế vòng lặp:**
 
 | Thành phần                                           | Vì sao cần                                                                                                                                                                                        |
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **File và dự án riêng**                        | Script 2 không gọi Script 1 và ghi vào `tinh_huong_2_vonglap/`, nên kết quả chạy một lượt trong `tinh_huong_2_auto/` không bị ghi đè và còn để so sánh                    |
+| **Chép sẵn kết quả khâu 1, 2**               | Hai lần chạy cùng câu hỏi nghiên cứu, cùng dữ liệu; khác biệt ở bản thảo chỉ đến từ khâu 3                                                                                         |
 | **Hai bước A và B xen kẽ**                   | Tách bạch *làm* (BioinformaticianAgent) khỏi *đánh giá* (IdeaAgent). Nếu để một agent vừa phân tích vừa tự chấm, nó gần như luôn kết luận là đã đủ                  |
 | **`MAX_VONG` mặc định 3**                   | Trần cứng, đúng khuyến nghị ở mục 3.7. Không có trần thì agent sẽ phân tích mãi, chi phí token tăng không kiểm soát                                                            |
 | **File `verdict_N.txt` chỉ chứa một từ**   | Phán quyết nằm ở file riêng, dễ kiểm tra bằng `tr` và `[[ ]]`. Nếu dò chữ "ĐỦ" trong một đoạn văn dài thì rất dễ nhận nhầm, ví dụ gặp câu "chưa đủ bằng chứng" |
@@ -2005,16 +2138,28 @@ Lưu ý thứ tự chạy: script vòng lặp **thay thế khâu 3**, nên trìn
 1. **Chi phí.** Mỗi vòng là hai lượt gọi agent, mỗi lượt lại gồm nhiều lượt gọi mô hình. Ba vòng có thể tốn gấp 5–6 lần so với chạy một lượt. Hãy xem nhật ký trong `logs/` để ước lượng.
 2. **Nguy cơ "câu cá" kết quả.** Vòng lặp càng nhiều, agent càng dễ thử đủ cách cho tới khi ra kết quả đẹp. Đối sách là sổ tay nghiên cứu: **mọi phân tích đã thử đều phải được ghi lại**, kể cả những hướng không cho kết quả gì. Khi viết bài, phải phân biệt rõ đâu là phân tích dự kiến từ đầu, đâu là phân tích khám phá phát sinh sau.
 
-### So sánh hai lần chạy
+### So sánh các lần chạy
 
-Vì lần chạy thủ công nằm ở `tinh_huong_2/` còn lần chạy tự động nằm ở `tinh_huong_2_auto/`, bạn có thể đặt chúng cạnh nhau mà so:
+Ba lần chạy nằm ở ba thư mục riêng, nên bạn có thể đặt chúng cạnh nhau mà so:
+
+| Thư mục                   | Cách chạy                                |
+| ------------------------- | ---------------------------------------- |
+| `tinh_huong_2/`         | Thủ công, từng khâu trong cửa sổ chat |
+| `tinh_huong_2_auto/`    | Script 1, phân tích một lượt          |
+| `tinh_huong_2_vonglap/` | Script 2, phân tích nhiều vòng         |
 
 ```bash
 # Số DEG của từng so sánh
-wc -l tinh_huong_2/03_Analysis/deg/*.tsv tinh_huong_2_auto/03_Analysis/deg/*.tsv
+wc -l tinh_huong_2/03_Analysis/deg/*.tsv tinh_huong_2_auto/03_Analysis/deg/*.tsv tinh_huong_2_vonglap/03_Analysis/deg/*.tsv
 
-# Khác nhau ở phần nhận xét kết quả
+# Thủ công và tự động khác nhau ở phần nhận xét kết quả
 diff tinh_huong_2/03_Analysis/README.md tinh_huong_2_auto/03_Analysis/README.md
+
+# Vòng lặp thêm được gì so với chạy một lượt
+diff tinh_huong_2_auto/03_Analysis/README.md tinh_huong_2_vonglap/03_Analysis/README.md
+
+# Vòng lặp đã gọi agent bao nhiêu lượt (mỗi file log là một lượt)
+ls tinh_huong_2_auto/logs/*.log tinh_huong_2_vonglap/logs/*.log
 ```
 
 Đây chính là **bài tập mở rộng ở mục 3.7**: bản thảo của lần chạy có vòng lặp có sâu hơn bản chạy một lượt không, và tốn thêm bao nhiêu thời gian cùng chi phí?
