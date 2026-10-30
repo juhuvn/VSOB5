@@ -39,12 +39,12 @@ Bản Word chính thức, đầy đủ định dạng:
 
 ### Các báo cáo chính
 
-| Ngày | Báo cáo viên | Chủ đề |
-| -- | -- | -- |
-| 1 | **TS. Trần Thương Văn Du**<br>Swiss Institute of Bioinformatics; Giáo sư thỉnh giảng, Trường ĐH Khoa học Tự nhiên, ĐHQG-HCM | Toward sustainable life sciences: privacy preserving AI and multimodal data integration |
-| 1 | **TS. Bùi Văn Thạch**<br>Khoa CNTT, Trường ĐH Khoa học Tự nhiên, ĐHQG-HCM | From biostatistics to Agentic AI in bioinformatics |
-| 2 | **PGS.TS. Nguyễn Hoàng Hải**<br>Đại học Quốc gia Hà Nội | Triết học khoa học trong thời đại AI và công nghệ sinh học |
-| 3 | **PGS.TS. Chu Đình Tới**<br>Trưởng khoa Khoa học Ứng dụng, Trường Quốc tế, ĐHQGHN | "Quang di truyền" — giải thưởng Nobel Y học 2026: Sinh học là phần cứng, AI là phần mềm và ánh sáng là chìa khóa? |
+| Ngày | Báo cáo viên | Chủ đề | Slide |
+| -- | -- | -- | -- |
+| 1 | **TS. Trần Thương Văn Du**<br>Swiss Institute of Bioinformatics; Giáo sư thỉnh giảng, Trường ĐH Khoa học Tự nhiên, ĐHQG-HCM | Toward sustainable life sciences: privacy preserving AI and multimodal data integration | 🖨️ [PDF](Day1/Tran_Thuong_Van_Du_VSOB_keynote.pdf) |
+| 1 | **TS. Bùi Văn Thạch**<br>Khoa CNTT, Trường ĐH Khoa học Tự nhiên, ĐHQG-HCM | From biostatistics to Agentic AI in bioinformatics | 🖨️ [PDF](Day1/Bui_Van_Thach_From_Biostatistics_to_Agentic_AI.pdf) |
+| 2 | **PGS.TS. Nguyễn Hoàng Hải**<br>Đại học Quốc gia Hà Nội | Triết học khoa học trong thời đại AI và công nghệ sinh học | |
+| 3 | **PGS.TS. Chu Đình Tới**<br>Trưởng khoa Khoa học Ứng dụng, Trường Quốc tế, ĐHQGHN | "Quang di truyền" — giải thưởng Nobel Y học 2026: Sinh học là phần cứng, AI là phần mềm và ánh sáng là chìa khóa? | |
 
 ### Báo cáo mời khác
 
@@ -55,6 +55,13 @@ Bản Word chính thức, đầy đủ định dạng:
 ---
 
 ## 📚 Tài liệu theo ngày
+
+### Ngày 1 — Báo cáo mời
+
+| Tài liệu | Mô tả |
+| -- | -- |
+| 🖨️ [Tran_Thuong_Van_Du_VSOB_keynote.pdf](Day1/Tran_Thuong_Van_Du_VSOB_keynote.pdf) | Slide của **TS. Trần Thương Văn Du** — *Toward sustainable life sciences: privacy preserving AI and multimodal data integration* |
+| 🖨️ [Bui_Van_Thach_From_Biostatistics_to_Agentic_AI.pdf](Day1/Bui_Van_Thach_From_Biostatistics_to_Agentic_AI.pdf) | Slide của **TS. Bùi Văn Thạch** — *From biostatistics to Agentic AI in bioinformatics* |
 
 ### Ngày 1 — Agentic Bioinformatics in Practice
 
