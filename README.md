@@ -43,7 +43,7 @@ Bản Word chính thức, đầy đủ định dạng:
 | -- | -- | -- | -- |
 | 1 | **TS. Trần Thương Văn Du**<br>Swiss Institute of Bioinformatics; Giáo sư thỉnh giảng, Trường ĐH Khoa học Tự nhiên, ĐHQG-HCM | Toward sustainable life sciences: privacy preserving AI and multimodal data integration | 🖨️ [PDF](Day1/Tran_Thuong_Van_Du_VSOB_keynote.pdf) |
 | 1 | **TS. Bùi Văn Thạch**<br>Khoa CNTT, Trường ĐH Khoa học Tự nhiên, ĐHQG-HCM | From biostatistics to Agentic AI in bioinformatics | 🖨️ [PDF](Day1/Bui_Van_Thach_From_Biostatistics_to_Agentic_AI.pdf) |
-| 2 | **PGS.TS. Nguyễn Hoàng Hải**<br>Đại học Quốc gia Hà Nội | Triết học khoa học trong thời đại AI và công nghệ sinh học | |
+| 2 | **PGS.TS. Nguyễn Hoàng Hải**<br>Đại học Quốc gia Hà Nội | Triết học khoa học trong thời đại AI và công nghệ sinh học | 🖨️ [PDF](Day2/NguyenHoangHai_vsob5-triet-hoc-khoa-hoc-AI.pdf) |
 | 3 | **PGS.TS. Chu Đình Tới**<br>Trưởng khoa Khoa học Ứng dụng, Trường Quốc tế, ĐHQGHN | "Quang di truyền" — giải thưởng Nobel Y học 2026: Sinh học là phần cứng, AI là phần mềm và ánh sáng là chìa khóa? | |
 
 ### Báo cáo mời khác
@@ -105,6 +105,7 @@ Nội dung tài liệu thực hành:
 | -- | -- |
 | 📖 [01-Case-study-challenge.md](Day2/01-Case-study-challenge.md) | **Đề bài cho các nhóm.** Bảy bối cảnh nghiên cứu khác nhau, khai thác dữ liệu công khai (GEO, recount3) bằng đội ngũ AI Agent: thẩm định dữ liệu, lên ý tưởng, phân tích, viết bài. Kèm thang điểm và quy định |
 | 🖨️ [01-Case-study-challenge.pdf](Day2/01-Case-study-challenge.pdf) | Bản PDF để in, có trang bìa và mục lục |
+| 🖨️ [NguyenHoangHai_vsob5-triet-hoc-khoa-hoc-AI.pdf](Day2/NguyenHoangHai_vsob5-triet-hoc-khoa-hoc-AI.pdf) | Slide báo cáo mời của **PGS.TS. Nguyễn Hoàng Hải** — *Triết học khoa học trong thời đại AI và công nghệ sinh học* |
 
 ### Ngày 3 — Báo cáo và trao giải
 
