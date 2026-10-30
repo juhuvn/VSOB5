@@ -8,6 +8,19 @@ NCVC, Viện CNTT, VAST
 
 ---
 
+## Timeline:
+
+| Thời gian | Nội dung | Hoạt động cụ thể |
+| -- | -- | -- |
+| 10:15 – 10:30 | Khởi động và chuẩn bị nhóm | Chia vai trò trong nhóm; tạo thư mục chia sẻ dữ liệu; tải và kiểm tra dữ liệu đầu vào. |
+| 10:30 – 12:00 | Xác định bài toán nghiên cứu | Xác định câu hỏi nghiên cứu; upload dữ liệu lên server, sử dụng AI Agent để khám phá dữ liệu, xây dựng và tối ưu prompt; |
+| 12:00 – 13:30 | Nghỉ trưa |  |
+| 13:30 – 15:00 | Thực hành phân tích dữ liệu với AI | Sử dụng AI Agent để thực hiện phân tích, kiểm tra kết quả và rút ra những phát hiện ban đầu. |
+| 15:00 – 16:00 | Phân tích chuyên sâu và diễn giải kết quả | Kiểm chứng kết quả; trực quan hóa dữ liệu; thảo luận và thống nhất các phát hiện chính. |
+| 16:00 – 17:30 | Hoàn thiện báo cáo | Tổng hợp kết quả phân tích; xây dựng báo cáo; chuẩn bị bài trình bày |
+
+
+
 # 0. Yêu cầu chung cho các nhóm
 
 ## 0.1 Ban tổ chức cung cấp gì, nhóm phải tự làm gì?
